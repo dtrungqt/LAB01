@@ -25,6 +25,7 @@ class Main extends Component {
   }
 
   render() {
+    //tạo functional component
     const HomePage = () => {
       return (
         <Home
@@ -33,6 +34,22 @@ class Main extends Component {
           promotion={
             this.state.promotions.filter((promotion) => promotion.featured)[0]
           }
+        />
+      );
+    };
+
+    //tạo function component
+    const DishWithId = ({ match }) => {
+      return (
+        <DishDetail
+          dish={
+            this.state.dishes.filter(
+              (dish) => dish.id === parseInt(match.params.dishId, 10)
+            )[0]
+          }
+          comments={this.state.comments.filter(
+            (comment) => comment.dishId === parseInt(match.params.dishId, 10)
+          )}
         />
       );
     };
@@ -50,6 +67,7 @@ class Main extends Component {
             path="/menu"
             component={() => <Menu dishes={this.state.dishes} />}
           />
+          <Route path="/menu/:dishId" component={DishWithId} />
           <Route exact path="/contactus" component={Contact} />
           {/* Sử dụng exact có nghĩa là path phải khớp chính xác với path sau đó (ở
           đây là /menu). Bởi vì ta định tuyến (route) đến DishDetail Component
