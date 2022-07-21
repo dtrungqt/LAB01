@@ -6,7 +6,6 @@ import {
   CardBody,
   CardTitle,
   CardSubtitle,
-  NavItem,
 } from "reactstrap";
 
 function RenderCard({ item }) {
