@@ -8,6 +8,8 @@ import {
   Label,
   Input,
   Col,
+  Row,
+  FormFeedback,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -22,11 +24,61 @@ class Contact extends Component {
       agree: false,
       contactType: "Tel.",
       message: "",
+      touched: {
+        firstName: false,
+        lastName: false,
+        telNum: false,
+        email: false,
+      },
     };
 
     /* LƯU Ý: để thực hiện phương thức handleSubmit này, ta cần ràng buộn (bind) nó trong constructor  */
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+  }
+
+  //kiểm tra trường đã được điền hay chưa
+  handleBlur = (field) => (evt) => {
+    this.setState({
+      touched: { ...this.state.touched, [field]: true },
+    });
+  };
+
+  validate(firstName, lastName, telNum, email) {
+    const errors = {
+      firstName: "",
+      lastName: "",
+      telNum: "",
+      email: "",
+    };
+
+    //thiết lập firstName có từ 3-10 ký tự
+    if (this.state.touched.firstName && firstName.length < 3)
+      errors.firstName = "First Name should be >= 3 characters";
+    else if (this.state.touched.firstName && firstName.length > 10)
+      errors.firstName = "First Name should be <= 10 characters";
+
+    if (this.state.touched.lastName && lastName.length < 3)
+      errors.lastName = "Last Name should be >= 3 characters";
+    else if (this.state.touched.lastName && lastName.length > 10)
+      errors.lastName = "Last Name should be <= 10 characters";
+
+    // kiểm tra telNum phải là tập hợp các số
+    // Ta sử dụng regular expression (biểu thức chính quy)
+    const reg = /^\d+$/; // điều này biểu thị: tất cả các ký tự nên toàn là số và không nên chứa các kí tự khác
+    if (this.state.touched.telNum && !reg.test(telNum))
+      errors.telNum = "Tel. Number should contain only numbers";
+
+    //ktra email
+    //ktra trong mỗi ký tự trong email có chứa dấu @ hay không, nếu ko có hoặc có hơn 1 ký tự thì báo lỗi
+    if (
+      this.state.touched.email &&
+      email.split("").filter((x) => x === "@").length !== 1
+    )
+      errors.email = "Email should contain a @";
+
+    return errors;
   }
 
   //Dùng để ràng buộc các giá trị nhập vào từ input và các giá trị state
@@ -46,6 +98,13 @@ class Contact extends Component {
     event.preventDefault();
   }
   render() {
+    const errors = this.validate(
+      this.state.firstName,
+      this.state.lastName,
+      this.state.telNum,
+      this.state.email
+    );
+
     return (
       <div className="container">
         <div className="row">
@@ -134,8 +193,13 @@ class Contact extends Component {
                     name="firstName"
                     placeholder="First Name"
                     value={this.state.firstName}
+                    valid={errors.firstName === ""}
+                    invalid={errors.firstName !== ""}
+                    onBlur={this.handleBlur("firstName")}
                     onChange={this.handleInputChange}
                   />
+                  {/* hiển thị lỗi nếu có  */}
+                  <FormFeedback>{errors.firstName}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -153,8 +217,13 @@ class Contact extends Component {
                     name="lastName"
                     placeholder="Last Name"
                     value={this.state.lastName}
+                    valid={errors.lastName === ""}
+                    invalid={errors.lastName !== ""}
+                    onBlur={this.handleBlur("lastName")}
                     onChange={this.handleInputChange}
                   />
+                  {/* hiển thị lỗi nếu có  */}
+                  <FormFeedback>{errors.lastName}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -172,8 +241,13 @@ class Contact extends Component {
                     name="telNum"
                     placeholder="Telephone Number"
                     value={this.state.telNum}
+                    valid={errors.telNum === ""}
+                    invalid={errors.telNum !== ""}
+                    onBlur={this.handleBlur("telNum")}
                     onChange={this.handleInputChange}
                   />
+                  {/* hiển thị lỗi nếu có  */}
+                  <FormFeedback>{errors.telNum}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -191,8 +265,13 @@ class Contact extends Component {
                     name="email"
                     placeholder="Email"
                     value={this.state.email}
+                    valid={errors.email === ""}
+                    invalid={errors.email !== ""}
+                    onBlur={this.handleBlur("email")}
                     onChange={this.handleInputChange}
                   />
+                  {/* hiển thị lỗi nếu có  */}
+                  <FormFeedback>{errors.email}</FormFeedback>
                 </Col>
               </FormGroup>
 
